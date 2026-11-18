@@ -1,5 +1,6 @@
 package com.techcrack.questionService.controller;
 
+import com.techcrack.questionService.dto.QuestionAnswerSubmissionRequest;
 import com.techcrack.questionService.dto.question.QuestionDto;
 import com.techcrack.questionService.entity.Category;
 import com.techcrack.questionService.entity.Question;
@@ -40,5 +41,19 @@ public class QuestionController {
     @GetMapping("/questions/random")
     public ResponseEntity<List<Long>> getRandomQuestionsByCategory(@RequestParam("category") Category category, @RequestParam("limit") int count) {
         return ResponseEntity.ok(service.getRandomQuestionsByCategory(category, count));
+    }
+
+    @PostMapping("/questions")
+    public ResponseEntity<List<QuestionDto>> getAllQuestions(@RequestBody List<Long> questionIds) {
+        List<Question> questionDtos = service.findAllQuestionsById(questionIds);
+
+        return ResponseEntity.ok(questionMapper.mapToQuestionDtos(questionDtos));
+    }
+
+    @PostMapping("/questions/answer/submission")
+    public ResponseEntity<Long> submitAnswers(@RequestBody List<QuestionAnswerSubmissionRequest> submissionRequests) {
+        long result = service.submitAnswers(submissionRequests);
+
+        return ResponseEntity.ok(result);
     }
 }
