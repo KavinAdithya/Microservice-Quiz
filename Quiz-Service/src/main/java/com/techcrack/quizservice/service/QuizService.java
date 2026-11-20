@@ -7,6 +7,7 @@ import com.techcrack.quizservice.feign.QuestionServiceClient;
 import com.techcrack.quizservice.model.*;
 import com.techcrack.quizservice.model.question.QuestionDto;
 import com.techcrack.quizservice.repository.QuizRepository;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -22,14 +23,18 @@ public class QuizService {
     private final QuestionServiceClient questionClient;
     private final AuthenticationServiceClient authClient;
 
+    private final QuestionServiceRetryClient questionRetryClient;
+
     public QuizService(QuizRepository quizRepository,
                        QuestionServiceClient questionService,
                        QuizAttemptService quizAttemptService,
-                       AuthenticationServiceClient authClient) {
+                       AuthenticationServiceClient authClient,
+                       QuestionServiceRetryClient questionRetryClient) {
         this.repository = quizRepository;
         this.questionClient = questionService;
         this.quizAttemptService = quizAttemptService;
         this.authClient = authClient;
+        this.questionRetryClient = questionRetryClient;
     }
 
     public boolean createQuiz(QuizCreateRequest request) {
@@ -87,7 +92,7 @@ public class QuizService {
                                         .toList();
 
         System.out.println("QUESTION IDS : " + questionIds);
-        List<QuestionDto> questionDtos = questionClient.getAllQuestions(questionIds).getBody();
+        List<QuestionDto> questionDtos = questionRetryClient.getAllQuestions(questionIds);
 
         return new QuizQuestionResponse(quiz.getId(), quiz.getName(), category, questionDtos);
     }
@@ -96,7 +101,7 @@ public class QuizService {
         Quiz quiz = repository.findById(submissionRequest.quizId())
                 .orElseThrow(() -> new RuntimeException("Invalid Quiz Id"));
 
-        Long totalCorrectAnswers = questionClient.submitAnswers(submissionRequest.answerSubmitRequests()).getBody();
+        Long totalCorrectAnswers = questionRetryClient.findCorrectAnswerScore(submissionRequest);
 
         if (totalCorrectAnswers == null)
             throw new RuntimeException("Failed to evaluate quiz. try again");
@@ -113,4 +118,6 @@ public class QuizService {
 
         return new QuizResultResponse(quiz.getQuestionIds().size(), totalCorrectAnswers, quiz.getQuestionIds().size() - totalCorrectAnswers);
     }
+
+
 }

@@ -24,7 +24,7 @@ public class SpringSecurityConfiguration {
                 .httpBasic(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers("/authentication-service/api/users/login", "/api/users/register").permitAll()
+                        .requestMatchers("/authentication-service/api/users/login", "/api/users/register", "/actuator/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(
                         SessionCreationPolicy.STATELESS

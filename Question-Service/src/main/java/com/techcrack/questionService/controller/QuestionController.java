@@ -11,11 +11,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
 @RequestMapping("/api")
 public class QuestionController {
 
+    private final AtomicInteger attempts = new AtomicInteger();
     private final QuestionMapper questionMapper;
     private final QuestionService service;
 
