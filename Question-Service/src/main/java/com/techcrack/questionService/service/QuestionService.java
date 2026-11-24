@@ -30,11 +30,16 @@ public class QuestionService {
     }
 
     public List<Long> getRandomQuestionsByCategory(Category category, int count) {
+
         return repository.getRandomQuestionsByCategory(category.name(), count);
     }
 
     public List<Question> findAllQuestionsById(List<Long> questionIds) {
-
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            System.out.println("Thread Awake in Random Question By Category");
+        }
         return repository.getAllQuestionsById(questionIds);
     }
 

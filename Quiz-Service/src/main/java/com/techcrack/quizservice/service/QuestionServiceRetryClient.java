@@ -3,6 +3,7 @@ package com.techcrack.quizservice.service;
 import com.techcrack.quizservice.feign.QuestionServiceClient;
 import com.techcrack.quizservice.model.QuizAnswerSubmissionRequest;
 import com.techcrack.quizservice.model.question.QuestionDto;
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
@@ -53,6 +54,10 @@ public class QuestionServiceRetryClient {
             name = "questionService",
             fallbackMethod = "getAllQuestionRateLimitFallBack"
     )
+    @Bulkhead(
+            name = "questionService",
+            fallbackMethod = "getAllQuestionRequestOverload"
+    )
     public List<QuestionDto> getAllQuestions(List<Long> questionIds) {
 
         return questionClient.getAllQuestions(questionIds).getBody();
@@ -60,15 +65,12 @@ public class QuestionServiceRetryClient {
 
     public List<QuestionDto> getAllQuestionsFallback(
             List<Long> questionIds,
-            Throwable throwable) {
+            Throwable throwable) throws Throwable {
 
         System.out.println("FALLBACK EXECUTED!");
         System.out.println(throwable.getMessage());
 
-        throw new ResponseStatusException(
-                HttpStatus.SERVICE_UNAVAILABLE,
-                "Question Service unavailable"
-        );
+        throw throwable;
     }
 
     public List<QuestionDto> getAllQuestionRateLimitFallBack(
@@ -80,4 +82,16 @@ public class QuestionServiceRetryClient {
 
         throw throwable;
     }
+
+    public List<QuestionDto> getAllQuestionRequestOverload(
+            List<Long> questionIds,
+            Throwable throwable) throws Throwable {
+
+        System.out.println("BULK HEAD REJECTED FOR GET ALL QUESTION");
+        System.out.println(throwable.getMessage());
+
+        throw throwable;
+    }
+
+
 }
