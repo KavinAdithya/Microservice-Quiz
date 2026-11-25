@@ -7,7 +7,7 @@ import com.techcrack.quizservice.feign.QuestionServiceClient;
 import com.techcrack.quizservice.model.*;
 import com.techcrack.quizservice.model.question.QuestionDto;
 import com.techcrack.quizservice.repository.QuizRepository;
-import io.github.resilience4j.retry.annotation.Retry;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@AllArgsConstructor
 public class QuizService {
     private final QuizRepository repository;
 
@@ -24,18 +25,8 @@ public class QuizService {
     private final AuthenticationServiceClient authClient;
 
     private final QuestionServiceRetryClient questionRetryClient;
+    private final NotificationPublishService notificationPublishService;
 
-    public QuizService(QuizRepository quizRepository,
-                       QuestionServiceClient questionService,
-                       QuizAttemptService quizAttemptService,
-                       AuthenticationServiceClient authClient,
-                       QuestionServiceRetryClient questionRetryClient) {
-        this.repository = quizRepository;
-        this.questionClient = questionService;
-        this.quizAttemptService = quizAttemptService;
-        this.authClient = authClient;
-        this.questionRetryClient = questionRetryClient;
-    }
 
     public boolean createQuiz(QuizCreateRequest request) {
         List<QuestionDto> questions = questionClient.findAllQuestions().getBody();
@@ -116,7 +107,14 @@ public class QuizService {
         if (!isAttemptCreated)
             throw new RuntimeException("Failed to create attempt");
 
-        return new QuizResultResponse(quiz.getQuestionIds().size(), totalCorrectAnswers, quiz.getQuestionIds().size() - totalCorrectAnswers);
+        QuizResultResponse response = new QuizResultResponse(quiz.getQuestionIds().size(), totalCorrectAnswers, quiz.getQuestionIds().size() - totalCorrectAnswers);
+
+        boolean isPublished = notificationPublishService.publishEmailNotificationFromQuizSubmission(quiz, response);
+
+        if (!isPublished)
+            System.out.println("Notification has been produced");
+
+        return response;
     }
 
 

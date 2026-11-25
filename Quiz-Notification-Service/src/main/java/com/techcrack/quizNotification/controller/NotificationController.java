@@ -1,6 +1,8 @@
 package com.techcrack.quizNotification.controller;
 
+import com.techcrack.quizNotification.model.EmailNotificationModel;
 import com.techcrack.quizNotification.notification.NotificationService;
+import com.techcrack.quizNotification.service.EmailNotificationService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,17 +18,15 @@ import java.util.Map;
 @RequestMapping("/api")
 public class NotificationController {
 
-    private NotificationService notificationService;
+    private NotificationService<EmailNotificationModel> notificationService;
 
     @GetMapping("/send-email")
     public ResponseEntity<?> sendEmail(@RequestParam("to") String to) {
-        Map<String, String> data = new HashMap<>();
+        String body = "Welcome Kavin \n \t Writing behalf of tech-crack this email is Testing purpose ignore it.";
 
-        data.put("to", to);
-        data.put("subject", "Quiz Application Email Test");
-        data.put("body", "Welcome Kavin \n \t Writing behalf of tech-crack this email is Testing purpose ignore it.");
+        EmailNotificationModel emailNotificationModel = new EmailNotificationModel(to, "Quiz Application Email Test", body);
 
-        notificationService.sendNotification(data);
+        notificationService.sendNotification(emailNotificationModel);
 
         return ResponseEntity.noContent()
                     .build();
