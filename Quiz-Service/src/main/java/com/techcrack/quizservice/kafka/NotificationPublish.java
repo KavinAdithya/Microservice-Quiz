@@ -12,7 +12,7 @@ public class NotificationPublish {
     private KafkaConfiguration kafkaConfiguration;
 
     public boolean publishNotify(EmailNotificationModel data) {
-        kafkaTemplate.send(kafkaConfiguration.getNotificationTopic(), data);
+        kafkaTemplate.send(kafkaConfiguration.getNotificationTopic(), "email-notify", data);
 
         return true;
     }
