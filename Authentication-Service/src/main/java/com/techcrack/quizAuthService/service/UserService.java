@@ -1,9 +1,6 @@
 package com.techcrack.quizAuthService.service;
 
-import com.techcrack.quizAuthService.dto.AuthenticatedResponse;
-import com.techcrack.quizAuthService.dto.AuthenticationRequest;
-import com.techcrack.quizAuthService.dto.UserCredentialModel;
-import com.techcrack.quizAuthService.dto.UserDto;
+import com.techcrack.quizAuthService.dto.*;
 import com.techcrack.quizAuthService.entity.CustomUserDetail;
 import com.techcrack.quizAuthService.entity.User;
 import com.techcrack.quizAuthService.repository.UserRepository;
@@ -11,7 +8,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +34,7 @@ public class UserService {
         user.setName(userDto.name());
         user.setUsername(userDto.username());
         user.setPassword(encoder.encode(userDto.password()));
+        user.setEmail(userDto.email());
         repository.save(user);
     }
 
@@ -58,11 +55,18 @@ public class UserService {
         return new AuthenticatedResponse(authentication.getName(), token);
     }
 
-    public long getCurrentUserId() {
+    public LoggedInUserDetail getCurrentUser() {
         CustomUserDetail userDetails = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         assert userDetails != null;
 
-        return userDetails.getUser().getId();
+        User user = userDetails.getUser();
+
+        return new LoggedInUserDetail(
+                user.getId(),
+                user.getName(),
+                user.getUsername(),
+                user.getEmail()
+        );
     }
 }

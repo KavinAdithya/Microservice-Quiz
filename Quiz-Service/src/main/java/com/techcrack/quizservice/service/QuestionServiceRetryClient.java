@@ -1,15 +1,13 @@
 package com.techcrack.quizservice.service;
 
 import com.techcrack.quizservice.feign.QuestionServiceClient;
-import com.techcrack.quizservice.model.QuizAnswerSubmissionRequest;
+import com.techcrack.quizservice.model.quiz.request.QuizAnswerSubmissionRequest;
 import com.techcrack.quizservice.model.question.QuestionDto;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 

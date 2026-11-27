@@ -1,4 +1,4 @@
-package com.techcrack.quizservice.model;
+package com.techcrack.quizservice.model.quiz.context;
 
 import com.techcrack.quizservice.entity.Quiz;
 

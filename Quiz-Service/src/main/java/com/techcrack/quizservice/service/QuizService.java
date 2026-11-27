@@ -4,8 +4,16 @@ import com.techcrack.quizservice.entity.Category;
 import com.techcrack.quizservice.entity.Quiz;
 import com.techcrack.quizservice.feign.AuthenticationServiceClient;
 import com.techcrack.quizservice.feign.QuestionServiceClient;
-import com.techcrack.quizservice.model.*;
+import com.techcrack.quizservice.kafka.NotificationProducer;
 import com.techcrack.quizservice.model.question.QuestionDto;
+import com.techcrack.quizservice.model.quiz.context.QuizAttemptDetails;
+import com.techcrack.quizservice.model.quiz.request.QuizAnswerSubmissionRequest;
+import com.techcrack.quizservice.model.quiz.request.QuizCreateRandomRequest;
+import com.techcrack.quizservice.model.quiz.request.QuizCreateRequest;
+import com.techcrack.quizservice.model.quiz.response.QuizQuestionResponse;
+import com.techcrack.quizservice.model.quiz.response.QuizResultResponse;
+import com.techcrack.quizservice.model.template.PaginationModel;
+import com.techcrack.quizservice.notification.email.QuizEmailProducerStrategy;
 import com.techcrack.quizservice.repository.QuizRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -25,7 +33,7 @@ public class QuizService {
     private final AuthenticationServiceClient authClient;
 
     private final QuestionServiceRetryClient questionRetryClient;
-    private final NotificationPublishService notificationPublishService;
+    private final NotificationProducer produceNotification;
 
 
     public boolean createQuiz(QuizCreateRequest request) {
@@ -97,10 +105,7 @@ public class QuizService {
         if (totalCorrectAnswers == null)
             throw new RuntimeException("Failed to evaluate quiz. try again");
 
-        Long currentUserId = authClient.getCurrentUserId().getBody();
-
-        if (currentUserId == null)
-            throw new RuntimeException("Failed to fetch current user details. Try again later");
+        long currentUserId = Objects.requireNonNull(authClient.getCurrentUser().getBody()).userId();
 
         boolean isAttemptCreated = quizAttemptService.createQuizAttemptFromAnswerSubmission(new QuizAttemptDetails(quiz, quiz.getQuestionIds().size(), totalCorrectAnswers, currentUserId));
 
@@ -109,7 +114,7 @@ public class QuizService {
 
         QuizResultResponse response = new QuizResultResponse(quiz.getQuestionIds().size(), totalCorrectAnswers, quiz.getQuestionIds().size() - totalCorrectAnswers);
 
-        boolean isPublished = notificationPublishService.publishEmailNotificationFromQuizSubmission(quiz, response);
+        boolean isPublished = produceNotification.produceEmailNotification(new QuizEmailProducerStrategy(authClient, "Quiz Result !!!!", quiz, response));
 
         if (!isPublished)
             System.out.println("Notification has been produced");

@@ -2,12 +2,13 @@ package com.techcrack.quizservice.service;
 
 import com.techcrack.quizservice.entity.QuizAttempt;
 import com.techcrack.quizservice.feign.AuthenticationServiceClient;
-import com.techcrack.quizservice.model.QuizAttemptDetailView;
-import com.techcrack.quizservice.model.QuizAttemptDetails;
+import com.techcrack.quizservice.model.quiz.context.QuizAttemptDetailView;
+import com.techcrack.quizservice.model.quiz.context.QuizAttemptDetails;
 import com.techcrack.quizservice.repository.QuizAttemptRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class QuizAttemptService {
@@ -35,9 +36,7 @@ public class QuizAttemptService {
     }
 
     public List<QuizAttemptDetailView> getAllCurrentUserQuizAttempts() {
-        Long currentUserId = authClient.getCurrentUserId().getBody();
-
-        assert currentUserId != null;
+        Long currentUserId = Objects.requireNonNull(authClient.getCurrentUser().getBody()).userId();
 
         return repository
                 .findByUserId(currentUserId)

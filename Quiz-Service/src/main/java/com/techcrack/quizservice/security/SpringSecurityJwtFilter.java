@@ -1,7 +1,7 @@
 package com.techcrack.quizservice.security;
 
 
-import com.techcrack.quizservice.service.JwtService;
+import com.techcrack.quizservice.jwt.JwtService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

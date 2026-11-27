@@ -1,4 +1,4 @@
-package com.techcrack.quizservice.model;
+package com.techcrack.quizservice.model.quiz.response;
 
 import com.techcrack.quizservice.entity.Category;
 import com.techcrack.quizservice.model.question.QuestionDto;

@@ -1,7 +1,6 @@
 package com.techcrack.quizservice.controller;
 
-import com.techcrack.quizservice.model.QuizAttemptDetailView;
-import com.techcrack.quizservice.repository.QuizAttemptRepository;
+import com.techcrack.quizservice.model.quiz.context.QuizAttemptDetailView;
 import com.techcrack.quizservice.service.QuizAttemptService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;

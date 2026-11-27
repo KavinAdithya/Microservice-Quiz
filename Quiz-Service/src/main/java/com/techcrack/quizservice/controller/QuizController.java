@@ -2,7 +2,13 @@ package com.techcrack.quizservice.controller;
 
 import com.techcrack.quizservice.entity.Category;
 import com.techcrack.quizservice.entity.Quiz;
-import com.techcrack.quizservice.model.*;
+import com.techcrack.quizservice.model.quiz.request.QuizAnswerSubmissionRequest;
+import com.techcrack.quizservice.model.quiz.request.QuizCreateRandomRequest;
+import com.techcrack.quizservice.model.quiz.request.QuizCreateRequest;
+import com.techcrack.quizservice.model.quiz.response.QuizCreateResponse;
+import com.techcrack.quizservice.model.quiz.response.QuizQuestionResponse;
+import com.techcrack.quizservice.model.quiz.response.QuizResultResponse;
+import com.techcrack.quizservice.model.template.PaginationModel;
 import com.techcrack.quizservice.service.QuizService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

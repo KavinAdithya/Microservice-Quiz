@@ -1,4 +1,4 @@
-package com.techcrack.quizservice.service;
+package com.techcrack.quizservice.jwt;
 
 import lombok.Getter;
 import lombok.Setter;

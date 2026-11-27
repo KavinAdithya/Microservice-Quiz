@@ -2,6 +2,7 @@ package com.techcrack.quizAuthService.controller;
 
 import com.techcrack.quizAuthService.dto.AuthenticatedResponse;
 import com.techcrack.quizAuthService.dto.AuthenticationRequest;
+import com.techcrack.quizAuthService.dto.LoggedInUserDetail;
 import com.techcrack.quizAuthService.dto.UserDto;
 import com.techcrack.quizAuthService.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -32,9 +33,10 @@ public class UserController {
         return ResponseEntity.ok(authenticationResponse);
     }
 
-    @GetMapping("/users/me/id")
-    public ResponseEntity<Long> getCurrentUserId() {
-        long currentUserId = service.getCurrentUserId();
-        return ResponseEntity.ok(currentUserId);
+    @GetMapping("/users/me")
+    public ResponseEntity<LoggedInUserDetail> getCurrentUserId() {
+        LoggedInUserDetail currentUser = service.getCurrentUser();
+
+        return ResponseEntity.ok(currentUser);
     }
 }
