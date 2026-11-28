@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @AllArgsConstructor
 public class NotificationProducer {
@@ -14,6 +16,7 @@ public class NotificationProducer {
 
     public boolean produceEmailNotification(EmailProducer data) {
         EmailNotificationModel emailNotificationModel = new EmailNotificationModel(
+                UUID.randomUUID(),
                 data.to(),
                 data.subject(),
                 data.body()

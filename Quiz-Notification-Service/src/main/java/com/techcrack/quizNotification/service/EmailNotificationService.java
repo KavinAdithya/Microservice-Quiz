@@ -17,17 +17,12 @@ public class EmailNotificationService implements NotificationService<EmailNotifi
 
     @Override
     public void sendNotification(EmailNotificationModel data) {
-        try {
-            SimpleMailMessage message = new SimpleMailMessage();
+        SimpleMailMessage message = new SimpleMailMessage();
 
-            message.setTo(data.to());
-            message.setSubject(data.subject());
-            message.setText(data.body());
+        message.setTo(data.getTo());
+        message.setSubject(data.getSubject());
+        message.setText(data.getBody());
 
-            mailSender.send(message);
-
-        } catch (Exception e) {
-            System.out.println("EMAIL NOTIFICATION FAILED due to " + e.getMessage());
-        }
+        mailSender.send(message);
     }
 }

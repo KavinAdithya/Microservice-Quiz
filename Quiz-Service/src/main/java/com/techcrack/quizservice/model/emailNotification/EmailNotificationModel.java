@@ -1,4 +1,6 @@
 package com.techcrack.quizservice.model.emailNotification;
 
-public record EmailNotificationModel(String to, String subject, String body) {
+import java.util.UUID;
+
+public record EmailNotificationModel(UUID eventId, String to, String subject, String body) {
 }

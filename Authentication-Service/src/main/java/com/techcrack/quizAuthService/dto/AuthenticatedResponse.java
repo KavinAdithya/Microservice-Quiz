@@ -1,4 +1,4 @@
 package com.techcrack.quizAuthService.dto;
 
-public record AuthenticatedResponse(String token, String name) {
+public record AuthenticatedResponse(String name, String token) {
 }
